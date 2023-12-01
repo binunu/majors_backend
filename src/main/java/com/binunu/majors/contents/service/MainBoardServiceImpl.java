@@ -1,4 +1,4 @@
 package com.binunu.majors.contents.service;
 
-public class MainBoardService {
+public class MainBoardServiceImpl {
 }

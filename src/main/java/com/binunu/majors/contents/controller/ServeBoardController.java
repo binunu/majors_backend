@@ -24,7 +24,7 @@ public class ServeBoardController {
         this.serveBoardService = serveBoardService;
     }
 
-    @GetMapping("getMajorList/large")
+    @GetMapping("major-list/large")
     public ResponseEntity<List<MajorDto>> getDistinctLargeMajor() {
         try {
             List<MajorDto> list = serveBoardService.getDistinctLargeMajor();
@@ -34,7 +34,7 @@ public class ServeBoardController {
             return new ResponseEntity<List<MajorDto>>(HttpStatus.BAD_REQUEST);
         }
     }
-    @GetMapping("getMajorList/middle")
+    @GetMapping("major-list/middle")
     public ResponseEntity<List<MajorDto>> getDistinctMiddleMajor(@RequestParam(value = "large", required = false) String large) {
             List<MajorDto> list = null;
         try {
@@ -43,9 +43,6 @@ public class ServeBoardController {
             }else{
                 list = serveBoardService.getDistinctMiddleMajor();
             }
-            for(MajorDto m:list){
-            System.out.println(m.toString());
-            }
             return new ResponseEntity<List<MajorDto>>(list, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
@@ -53,7 +50,7 @@ public class ServeBoardController {
         }
     }
 
-    @GetMapping("getMajorList/small")
+    @GetMapping("major-list/small")
     public ResponseEntity<List<MajorDto>> getDistinctSmallMajor(@RequestParam("middle") String middle) {
         try {
             List<MajorDto> list = serveBoardService.getDistinctSmallMajor(middle);

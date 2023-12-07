@@ -5,8 +5,9 @@ import com.binunu.majors.membership.dto.MemberDto;
 import java.util.Optional;
 
 public interface MemberService {
-    public Optional<MemberDto> getMemberByEmail(String email) throws Exception;
-    public Optional<MemberDto> getMemberByNickname(String nickname) throws Exception;
+    public MemberDto getMemberByEmail(String email) throws Exception;
+    public MemberDto getMemberByNickname(String nickname) throws Exception;
     public void join(MemberDto memberDto) throws Exception;
+    public String login(String email, String password) throws Exception;
 
 }

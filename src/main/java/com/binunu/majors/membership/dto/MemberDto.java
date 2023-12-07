@@ -1,12 +1,15 @@
 package com.binunu.majors.membership.dto;
 
 import jakarta.validation.constraints.Pattern;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.util.List;
 
 @Setter
 @Getter
@@ -27,12 +30,12 @@ public class MemberDto {
     private String middleMajor;
     private String graduate;
     private String profile;
-
-//    private String scraps;
-//    private String articles;
-//    private String goods;
-//    private String bads;
-//    private String comments;
-//    private String notifications;
+    private List<String> roles;
+    private String scraps;
+    private String articles;
+    private String goods;
+    private String bads;
+    private String comments;
+    private String notifications;
 
 }

@@ -3,6 +3,7 @@ package com.binunu.majors.membership.service;
 import com.binunu.majors.membership.dto.MemberDto;
 import com.binunu.majors.membership.repository.MemberRepository;
 import com.binunu.majors.security.JwtProvider;
+import com.binunu.majors.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,6 +62,12 @@ public class MemberServiceImpl implements MemberService {
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         return jwtProvider.createToken(email, authentication);
 
+    }
+
+    @Override
+    public MemberDto getCurrentMember() throws Exception {
+        String email = JwtUtil.getCurrentMemberEmail();
+        return getMemberByEmail(email);
     }
 
 

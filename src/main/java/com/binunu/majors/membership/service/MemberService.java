@@ -9,5 +9,6 @@ public interface MemberService {
     public MemberDto getMemberByNickname(String nickname) throws Exception;
     public void join(MemberDto memberDto) throws Exception;
     public String login(String email, String password) throws Exception;
+    MemberDto getCurrentMember() throws Exception;
 
 }

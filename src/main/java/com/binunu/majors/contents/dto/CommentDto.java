@@ -6,25 +6,17 @@ import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.Date;
 import java.util.List;
 
 @Getter
 @Setter
 @ToString
-@Document(collection = "article")
-public class ArticleDto {
+public class CommentDto {
     @Id
     private String id;
-    private String title;
+    private String from; //작성자id
+    private String to; //게시글id? or 댓글id
     private String content;
-    private String writer;
-    private String boardType;
-    private String subject;
-    private String middleMajor;
     private String uploadDate;
-    private List<String> goods;
-    private List<String> bads;
-    private List<CommentDto> comments;
-    //댓글추가
+    private List<CommentDto> replies;
 }

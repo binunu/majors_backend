@@ -1,6 +1,7 @@
 package com.binunu.majors.contents.service;
 
 import com.binunu.majors.contents.dto.ArticleDto;
+import com.binunu.majors.contents.dto.CommentDto;
 import com.binunu.majors.contents.repository.ArticleRepository;
 import com.binunu.majors.membership.dto.MemberDto;
 import com.binunu.majors.membership.dto.MemberProfileDto;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.xml.stream.events.Comment;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -48,4 +50,18 @@ public class MainBoardServiceImpl implements MainBoardService {
         map.put("article",article);
         return map;
     }
+
+    @Override
+    public void createComment(CommentDto commentDto) throws Exception {
+        String email = JwtUtil.getCurrentMemberEmail();
+        commentDto.setFrom(email);
+
+        SimpleDateFormat format =  new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        String strDate = format.format(new Date());
+        commentDto.setUploadDate(strDate);
+
+        commentDto.setReplies(new ArrayList<CommentDto>());
+
+    }
+
 }

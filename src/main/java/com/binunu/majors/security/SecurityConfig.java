@@ -27,6 +27,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(authorize->
                         authorize
                                 .requestMatchers("/member/info").hasRole("USER")
+                                .requestMatchers("/board/write").hasRole("USER")
                                 .requestMatchers("/**").permitAll()
                         )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class);

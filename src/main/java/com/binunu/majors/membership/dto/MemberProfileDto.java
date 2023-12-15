@@ -13,7 +13,6 @@ import java.util.List;
 @Setter
 @Getter
 @ToString
-@Document
 @NoArgsConstructor
 public class MemberProfileDto {
     private String email;

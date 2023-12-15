@@ -5,10 +5,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.Date;
 import java.util.List;
 
 @Setter
@@ -37,5 +39,7 @@ public class MemberDto {
     private String bads;
     private String comments;
     private String notifications;
+    @CreatedDate
+    private Date joinedAt;
 
 }

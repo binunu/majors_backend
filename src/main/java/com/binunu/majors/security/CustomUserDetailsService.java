@@ -1,6 +1,6 @@
 package com.binunu.majors.security;
 
-import com.binunu.majors.membership.dto.MemberDto;
+import com.binunu.majors.membership.dto.Member;
 import com.binunu.majors.membership.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,14 +18,14 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final MemberRepository memberRepository;
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<MemberDto> oMember = memberRepository.findByEmail(username);
+        Optional<Member> oMember = memberRepository.findByEmail(username);
         if(oMember.isPresent()){
             return createUserDetails(oMember.get());
         }else{
             throw new UsernameNotFoundException("회원정보가 일치하지 않습니다.");
         }
     }
-    private UserDetails createUserDetails(MemberDto member){
+    private UserDetails createUserDetails(Member member){
         return User.builder()
                 .username(member.getEmail())
                 .password(member.getPassword())

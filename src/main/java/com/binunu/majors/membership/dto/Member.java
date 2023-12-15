@@ -1,7 +1,6 @@
 package com.binunu.majors.membership.dto;
 
 import jakarta.validation.constraints.Pattern;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -17,7 +16,7 @@ import java.util.List;
 @Getter
 @ToString
 @Document(collection = "member")
-public class MemberDto {
+public class Member {
     @Id
     private String id;
     private String name;
@@ -32,13 +31,13 @@ public class MemberDto {
     private String middleMajor;
     private String graduate;
     private String profile;
-    private List<String> roles;
-    private String scraps;
-    private String articles;
-    private String goods;
-    private String bads;
-    private String comments;
+    private List<String> articles;
+    private List<String> scraps;
+    private List<String> goods;
+    private List<String> bads;
+    private List<String> comments;
     private String notifications;
+    private List<String> roles;
     @CreatedDate
     private Date joinedAt;
 

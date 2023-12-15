@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @ToString
 @Getter
 @Document(collection = "major")
-public class MajorDto {
+public class Major {
     private String large;
     private String middle;
     private String small;

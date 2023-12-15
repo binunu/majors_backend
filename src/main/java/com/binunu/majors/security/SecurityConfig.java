@@ -26,8 +26,8 @@ public class SecurityConfig {
             .sessionManagement(configurer -> configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authorize->
                         authorize
-                                .requestMatchers("/member/info").hasRole("USER")
-                                .requestMatchers("/board/write").hasRole("USER")
+                                .requestMatchers("/member/info/**").hasRole("USER")
+                                .requestMatchers("/board/write/**").hasRole("USER")
                                 .requestMatchers("/**").permitAll()
                         )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class);

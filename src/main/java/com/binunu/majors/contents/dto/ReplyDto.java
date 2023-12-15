@@ -18,12 +18,10 @@ public class ReplyDto {
     @Transient
     private String articleId; //게시글id? or 댓글id
     @Transient
-    private int replyId;
-
+    private int CommentId;
     private String content;
     private String createdAt;
     private List<String> sympathy;
-
     public static void numbering(){
         num++;
     }

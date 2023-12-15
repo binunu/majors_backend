@@ -29,24 +29,25 @@ public class MainBoardController {
         }
     }
     @GetMapping("/article/detail/{id}")
-    public ResponseEntity<Map<String,Object>> getArticleDetail(@PathVariable(value = "id") String id){
+    public ResponseEntity<ArticleDto> getArticleDetail(@PathVariable("id") String id){
         try{
-            Map<String,Object> map = mainBoardService.getArticleDetail(id);
-            return new ResponseEntity<Map<String,Object>>(map, HttpStatus.OK);
+            ArticleDto articleDto = mainBoardService.getArticleDetail(id);
+            return new ResponseEntity<ArticleDto>(articleDto, HttpStatus.OK);
         }catch (Exception e){
             log.info(e.getMessage());
-            return new ResponseEntity<Map<String,Object>>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<ArticleDto>(HttpStatus.BAD_REQUEST);
         }
     }
 
-    @GetMapping("/comment/write")
-    public ResponseEntity<String> createComment(@RequestBody CommentDto commentDto){
+    @PostMapping("/comment/write")
+    public ResponseEntity<ArticleDto> createComment(@RequestBody CommentDto commentDto){
         try{
-            mainBoardService.createComment(commentDto);
-            return new ResponseEntity<String>("성공", HttpStatus.OK);
+            log.info(commentDto.toString());
+            ArticleDto articleDto = mainBoardService.createComment(commentDto);
+            return new ResponseEntity<ArticleDto>(articleDto, HttpStatus.OK);
         }catch (Exception e){
             log.info(e.getMessage());
-            return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<ArticleDto>(HttpStatus.BAD_REQUEST);
         }
     }
 //    @GetMapping("/reply/write")

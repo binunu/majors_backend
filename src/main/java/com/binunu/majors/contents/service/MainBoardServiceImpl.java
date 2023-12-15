@@ -3,6 +3,7 @@ package com.binunu.majors.contents.service;
 import com.binunu.majors.contents.dto.ArticleDto;
 import com.binunu.majors.contents.dto.CommentDto;
 import com.binunu.majors.contents.repository.ArticleRepository;
+import com.binunu.majors.contents.repository.ArticleRepositoryTemp;
 import com.binunu.majors.membership.dto.MemberDto;
 import com.binunu.majors.membership.dto.MemberProfileDto;
 import com.binunu.majors.membership.repository.MemberRepository;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import javax.xml.stream.events.Comment;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -22,14 +24,13 @@ import java.util.*;
 public class MainBoardServiceImpl implements MainBoardService {
     private final ArticleRepository articleRepository;
     private final MemberService memberService;
+    private final ArticleRepositoryTemp articleRepositoryTemp;
     @Override
     public ArticleDto createArticle(ArticleDto articleDto) throws Exception {
         MemberDto mem = memberService.getCurrentMember();
-        SimpleDateFormat format =  new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        String strDate = format.format(new Date());
-
-        articleDto.setWriter(mem.getEmail());
-        articleDto.setUploadDate(strDate);
+        MemberProfileDto memberProfileDto = new MemberProfileDto(mem);
+        articleDto.setComments(new ArrayList<CommentDto>());
+        articleDto.setWriter(memberProfileDto);
         articleDto.setGoods(new ArrayList<>());
         articleDto.setBads(new ArrayList<>());
 
@@ -37,31 +38,34 @@ public class MainBoardServiceImpl implements MainBoardService {
     }
 
     @Override
-    public Map<String, Object> getArticleDetail(String id) throws Exception {
-        Map<String, Object> map = new HashMap<String, Object>();
-
-        Optional<ArticleDto> oArticle = articleRepository.findById(id);
-        ArticleDto article = oArticle.orElse(null);
-
-        MemberDto member = memberService.getMemberByEmail(article.getWriter());
-        MemberProfileDto profile = new MemberProfileDto(member);
-
-        map.put("profile",profile);
-        map.put("article",article);
-        return map;
+    public ArticleDto getArticleDetail(String id) throws Exception {
+        return articleRepositoryTemp.getArticleById(id);
     }
 
     @Override
-    public void createComment(CommentDto commentDto) throws Exception {
-        String email = JwtUtil.getCurrentMemberEmail();
-        commentDto.setFrom(email);
+    public ArticleDto createComment(CommentDto commentDto) throws Exception {
+        commentDto.setReplies(new ArrayList<CommentDto>()); //테스트필요
 
+        MemberDto memberDto = memberService.getCurrentMember();
+        MemberProfileDto memberProfileDto = new MemberProfileDto(memberDto);
+        commentDto.setFrom(memberProfileDto); //작성자 기록
+        //등록일 설정
         SimpleDateFormat format =  new SimpleDateFormat("yyyy-MM-dd HH:mm");
         String strDate = format.format(new Date());
-        commentDto.setUploadDate(strDate);
+        commentDto.setCreatedAt(strDate);
+        //공감
+        commentDto.setSympathy(new ArrayList<String>());
 
-        commentDto.setReplies(new ArrayList<CommentDto>());
+        //article update
+        ArticleDto articleDto = getArticleDetail(commentDto.getTo()); //to없애기
+        List<CommentDto> comment = articleDto.getComments();
+        if(comment == null){
+            comment = new ArrayList<CommentDto>();
+        }
+        comment.add(commentDto);
+        articleDto.setComments(comment);
 
+        return articleRepository.save(articleDto);
     }
 
 }

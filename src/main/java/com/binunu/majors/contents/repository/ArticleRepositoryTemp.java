@@ -1,6 +1,6 @@
 package com.binunu.majors.contents.repository;
 
-import com.binunu.majors.contents.dto.ArticleDto;
+import com.binunu.majors.contents.dto.Article;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -12,8 +12,8 @@ import org.springframework.stereotype.Repository;
 public class ArticleRepositoryTemp {
     private final MongoTemplate mongoTemplate;
 
-    public ArticleDto getArticleById(String articleId) {
+    public Article getArticleById(String articleId) {
         Query query = new Query(Criteria.where("_id").is(articleId));
-        return mongoTemplate.findOne(query, ArticleDto.class);
+        return mongoTemplate.findOne(query, Article.class);
     }
 }

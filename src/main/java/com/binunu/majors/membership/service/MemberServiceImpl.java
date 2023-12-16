@@ -1,13 +1,11 @@
 package com.binunu.majors.membership.service;
 
-import com.binunu.majors.membership.dto.MemberDto;
+import com.binunu.majors.membership.dto.Member;
 import com.binunu.majors.membership.repository.MemberRepository;
 import com.binunu.majors.security.JwtProvider;
 import com.binunu.majors.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -29,31 +27,34 @@ public class MemberServiceImpl implements MemberService {
 
 
     @Override
-    public MemberDto getMemberByEmail(String email) throws Exception {
-        Optional<MemberDto> oMember = memberRepository.findByEmail(email);
+    public Member getMemberByEmail(String email) throws Exception {
+        Optional<Member> oMember = memberRepository.findByEmail(email);
         return oMember.orElse(null);
     }
 
     @Override
-    public MemberDto getMemberByNickname(String nickname) throws Exception {
-        Optional<MemberDto> oMember = memberRepository.findByNickname(nickname);
+    public Member getMemberByNickname(String nickname) throws Exception {
+        Optional<Member> oMember = memberRepository.findByNickname(nickname);
         return oMember.orElse(null);
     }
 
     @Override
-    public void join(MemberDto memberDto) throws Exception {
-        String encodePassword = passwordEncoder.encode(memberDto.getPassword());
-        memberDto.setPassword(encodePassword);
-        //각 객체 만들고 추후에 추가.ㅇ
-//        memberDto.setArticles(0);
-//        memberDto.setComments(0);
-//        memberDto.setScraps(0);
-//        memberDto.setNotifications(0);
+    public void join(Member member) throws Exception {
+        String encodePassword = passwordEncoder.encode(member.getPassword());
+        member.setPassword(encodePassword);
+
+        member.setArticles(new ArrayList<String>());
+        member.setComments(new ArrayList<String>());
+        member.setScraps(new ArrayList<String>());
+        member.setGoods(new ArrayList<String>());
+        member.setBads(new ArrayList<String>());
+//        member.setNotifications(0);
+
         List<String> role = new ArrayList<String>();
         role.add("USER");
-        memberDto.setRoles(role);
+        member.setRoles(role);
 
-        memberRepository.save(memberDto);
+        memberRepository.save(member);
     }
 
     @Override
@@ -65,7 +66,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public MemberDto getCurrentMember() throws Exception {
+    public Member getCurrentMember() throws Exception {
         String email = JwtUtil.getCurrentMemberEmail();
         return getMemberByEmail(email);
     }

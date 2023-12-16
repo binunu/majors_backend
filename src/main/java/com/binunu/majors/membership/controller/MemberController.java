@@ -1,6 +1,6 @@
 package com.binunu.majors.membership.controller;
 
-import com.binunu.majors.membership.dto.MemberDto;
+import com.binunu.majors.membership.dto.Member;
 import com.binunu.majors.membership.service.MemberService;
 import com.binunu.majors.security.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +11,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
-import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -29,7 +28,7 @@ public class MemberController {
     public ResponseEntity<Boolean> existsEmail(@RequestBody Map<String,String> body) {
         try {
             String email = body.get("email");
-            MemberDto member = memberService.getMemberByEmail(email);
+            Member member = memberService.getMemberByEmail(email);
             if (member==null) { //중복확인 통과
                 return new ResponseEntity<Boolean>(true, HttpStatus.OK);
             } else {
@@ -42,7 +41,7 @@ public class MemberController {
     @GetMapping("/nickname/exist") //닉네임인증
     public ResponseEntity<Boolean> existNickname(@RequestParam("nickname") String nickname) {
         try {
-            MemberDto member = memberService.getMemberByNickname(nickname);
+            Member member = memberService.getMemberByNickname(nickname);
             if (member==null) { //중복확인 통과
                 return new ResponseEntity<Boolean>(true, HttpStatus.OK);
             } else {
@@ -54,9 +53,9 @@ public class MemberController {
     }
 
     @PostMapping("/join")
-    public ResponseEntity<Boolean> join(@RequestBody MemberDto memberDto, BindingResult bindingResult) {
+    public ResponseEntity<Boolean> join(@RequestBody Member member, BindingResult bindingResult) {
         try {
-            memberService.join(memberDto);
+            memberService.join(member);
             if (bindingResult.hasErrors()) {
                 String errorMessage = bindingResult.getFieldErrors().stream()
                         .map(error -> error.getDefaultMessage())
@@ -85,13 +84,22 @@ public class MemberController {
 
     //멤버정보받아오기
     @GetMapping("/info")
-    public ResponseEntity<MemberDto> getMemberInfo(){
+    public ResponseEntity<Member> getMemberInfo(){
         try{
             String email = JwtUtil.getCurrentMemberEmail();
-            MemberDto memberDto = memberService.getMemberByEmail(email);
-            return new ResponseEntity<MemberDto>(memberDto, HttpStatus.OK);
+            Member member = memberService.getMemberByEmail(email);
+            return new ResponseEntity<Member>(member, HttpStatus.OK);
         }catch (Exception e){
-            return new ResponseEntity<MemberDto>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<Member>(HttpStatus.BAD_REQUEST);
+        }
+    }
+    @GetMapping("/info/email")
+    public ResponseEntity<String> getMemberEmail(){
+        try{
+            String email = JwtUtil.getCurrentMemberEmail();
+            return new ResponseEntity<String>(email, HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
         }
     }
 

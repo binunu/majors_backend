@@ -1,12 +1,12 @@
 package com.binunu.majors.contents.service;
 
-import com.binunu.majors.contents.dto.ArticleDto;
+import com.binunu.majors.contents.dto.Article;
 import com.binunu.majors.contents.dto.CommentDto;
-
-import java.util.Map;
+import com.binunu.majors.contents.dto.ReplyDto;
 
 public interface MainBoardService {
-    ArticleDto createArticle(ArticleDto articleDto) throws Exception;
-    ArticleDto getArticleDetail(String id) throws Exception;
-    ArticleDto createComment(CommentDto commentDto) throws Exception;
+    Article createArticle(Article article) throws Exception;
+    Article getArticleDetail(String id) throws Exception;
+    Article createComment(CommentDto commentDto) throws Exception;
+    Article createReply(ReplyDto replyDto) throws Exception;
 }

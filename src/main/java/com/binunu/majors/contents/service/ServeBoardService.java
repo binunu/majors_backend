@@ -4,6 +4,7 @@ import com.binunu.majors.contents.dto.Article;
 import com.binunu.majors.contents.dto.Major;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ServeBoardService {
     List<Major> getDistinctLargeMajor() throws Exception;
@@ -14,5 +15,6 @@ public interface ServeBoardService {
     Article bookmark(String articleId) throws Exception;
     Article sympathy(String articleId,int commentId) throws Exception;
     Article sympathy(String articleId,int commentId, int replyId) throws Exception;
+    Map<String,Object> reaction(String articleId, String reactionType) throws Exception;
 
 }

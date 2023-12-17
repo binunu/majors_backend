@@ -23,8 +23,9 @@ public class Article {
     private String boardType;
     private String subject;
     private String middleMajor;
-    private List<String> goods;
-    private List<String> bads;
+    private int goods;
+    private int bads;
+    private List<Reaction> reactions;
     private List<String> scraps;
     private List<CommentDto> comments;
     @CreatedDate

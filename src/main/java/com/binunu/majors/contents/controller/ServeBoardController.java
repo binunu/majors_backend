@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -97,6 +98,20 @@ public class ServeBoardController {
             return new ResponseEntity<Article>(HttpStatus.BAD_REQUEST);
         }
     }
+    @PutMapping("/reaction/{id}")
+        public ResponseEntity<Map<String, Object>> reaction(@PathVariable("id") String articleId, @RequestBody Map<String,String> body) {
+            try {
+                String reactionType = body.get("reactionType");
+                //내려보내줄거 ? article의 좋아요수, 싫어요수, 유저의 리액션 상태
+                Map<String, Object> res =serveBoardService.reaction(articleId,reactionType);
+                //유저의 리액션 list에 아티클 추가
+                //memberActionService.sympathy(articleId,commentId,replyId);
+                return new ResponseEntity<Map<String, Object>>(res, HttpStatus.OK);
+            } catch (Exception e) {
+                log.info(e.getMessage());
+                return new ResponseEntity<Map<String, Object>>(HttpStatus.BAD_REQUEST);
+            }
+        }
 
 
 

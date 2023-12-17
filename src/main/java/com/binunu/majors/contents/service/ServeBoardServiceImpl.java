@@ -5,16 +5,16 @@ import com.binunu.majors.contents.dto.CommentDto;
 import com.binunu.majors.contents.dto.Major;
 import com.binunu.majors.contents.dto.ReplyDto;
 import com.binunu.majors.contents.repository.ArticleRepository;
+import com.binunu.majors.contents.repository.ArticleTemRepository;
 import com.binunu.majors.contents.repository.MajorRepository;
-import com.binunu.majors.membership.dto.Member;
-import com.binunu.majors.membership.service.MemberService;
 import com.binunu.majors.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -23,6 +23,7 @@ public class ServeBoardServiceImpl implements ServeBoardService{
     private final MajorRepository majorRepository;
     private final ArticleRepository articleRepository;
     private final MainBoardService mainBoardService;
+    private final ArticleTemRepository articleTemRepository;
 
 
     @Override
@@ -116,5 +117,17 @@ public class ServeBoardServiceImpl implements ServeBoardService{
 
         article.setComments(updateComments);
         return articleRepository.save(article);
+    }
+
+    @Override
+    public Map<String, Object> reaction(String articleId, String reactionType) throws Exception {
+        Map<String, Object> map = new HashMap<String,Object>();
+        String email = JwtUtil.getCurrentMemberEmail();
+        String state= articleTemRepository.updateArticleReaction(articleId,email,reactionType);
+        Article article = articleTemRepository.getArticleById(articleId);
+        map.put("goods",article.getGoods());
+        map.put("bads",article.getBads());
+        map.put("state",state);
+        return map;
     }
 }

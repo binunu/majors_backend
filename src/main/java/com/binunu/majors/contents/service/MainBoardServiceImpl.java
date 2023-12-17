@@ -2,9 +2,10 @@ package com.binunu.majors.contents.service;
 
 import com.binunu.majors.contents.dto.Article;
 import com.binunu.majors.contents.dto.CommentDto;
+import com.binunu.majors.contents.dto.Reaction;
 import com.binunu.majors.contents.dto.ReplyDto;
 import com.binunu.majors.contents.repository.ArticleRepository;
-import com.binunu.majors.contents.repository.ArticleRepositoryTemp;
+import com.binunu.majors.contents.repository.ArticleTemRepository;
 import com.binunu.majors.membership.dto.Member;
 import com.binunu.majors.membership.dto.MemberProfileDto;
 import com.binunu.majors.membership.service.MemberService;
@@ -21,15 +22,17 @@ import java.util.*;
 public class MainBoardServiceImpl implements MainBoardService {
     private final ArticleRepository articleRepository;
     private final MemberService memberService;
-    private final ArticleRepositoryTemp articleRepositoryTemp;
+    private final ArticleTemRepository articleTemRepository;
+
     @Override
     public Article createArticle(Article article) throws Exception {
         Member mem = memberService.getCurrentMember();
         MemberProfileDto memberProfileDto = new MemberProfileDto(mem);
         article.setComments(new ArrayList<CommentDto>());
         article.setWriter(memberProfileDto);
-        article.setGoods(new ArrayList<String>());
-        article.setBads(new ArrayList<String>());
+        article.setGoods(0);
+        article.setBads(0);
+        article.setReactions(new ArrayList<Reaction>());
         article.setScraps(new ArrayList<String>());
 
         return articleRepository.save(article);
@@ -37,7 +40,7 @@ public class MainBoardServiceImpl implements MainBoardService {
 
     @Override
     public Article getArticleDetail(String id) throws Exception {
-        return articleRepositoryTemp.getArticleById(id);
+        return articleTemRepository.getArticleById(id);
     }
 
     @Override

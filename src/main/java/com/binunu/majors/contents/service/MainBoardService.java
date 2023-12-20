@@ -16,4 +16,9 @@ public interface MainBoardService {
     Article getArticleDetail(String id) throws Exception;
     Article createComment(CommentDto commentDto) throws Exception;
     Article createReply(ReplyDto replyDto) throws Exception;
+    void removeArticle(String articleId) throws Exception;
+    Article removeComment(String articleId, int commentId) throws Exception;
+    Article removeReply(String articleId, int commentId, int replyId) throws Exception;
+
+
 }

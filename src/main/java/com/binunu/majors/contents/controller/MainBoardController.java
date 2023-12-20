@@ -114,5 +114,42 @@ public class MainBoardController {
         }
     }
 
+    @DeleteMapping("/delete/article/{article-id}")
+    public ResponseEntity<String> removeArticleItem(@PathVariable("article-id") String articleId){
+        try{
+            log.info("articleId:"+articleId);
+            mainBoardService.removeArticle(articleId);
+            return new ResponseEntity<String>("게시글이 삭제되었습니다!",HttpStatus.OK);
+        }catch (Exception e){
+            log.info(e.getMessage());
+            return new ResponseEntity<String>(e.getMessage(),HttpStatus.BAD_REQUEST);
+        }
+    }
+    @DeleteMapping("/delete/comment/{article-id}/{comment-id}")
+    public ResponseEntity<Article> removeArticleItem(@PathVariable("article-id") String articleId, @PathVariable("comment-id") int commentId){
+        try{
+            log.info("댓글삭제id:"+commentId);
+            Article article= mainBoardService.removeComment(articleId,commentId);
+            return new ResponseEntity<Article>(article,HttpStatus.OK);
+        }catch (Exception e){
+            log.info(e.getMessage());
+            return new ResponseEntity<Article>(HttpStatus.BAD_REQUEST);
+
+        }
+    }
+    @DeleteMapping("/delete/reply/{article-id}/{comment-id}/{reply-id}")
+    public ResponseEntity<Article> removeArticleItem(@PathVariable("article-id") String articleId, @PathVariable("comment-id") int commentId,@PathVariable("reply-id") int replyId){
+        try{
+            log.info("답글삭제id:"+replyId);
+            Article article = mainBoardService.removeReply(articleId,commentId,replyId);
+            return new ResponseEntity<Article>(article,HttpStatus.OK);
+        }catch (Exception e){
+            log.info(e.getMessage());
+            return new ResponseEntity<Article>(HttpStatus.BAD_REQUEST);
+
+        }
+    }
+
+
 
 }

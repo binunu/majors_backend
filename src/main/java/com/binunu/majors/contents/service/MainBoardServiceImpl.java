@@ -6,6 +6,7 @@ import com.binunu.majors.contents.repository.ArticleTemRepository;
 import com.binunu.majors.membership.dto.Member;
 import com.binunu.majors.membership.dto.MemberInfoDto;
 import com.binunu.majors.membership.service.MemberService;
+import com.binunu.majors.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -44,7 +45,7 @@ public class MainBoardServiceImpl implements MainBoardService {
 //    public List<Article> getArticleList() throws Exception {
     public Map<String,Object> getArticleListByType(String boardType, int page, int cnt) throws Exception {
         Map<String,Object> res = new HashMap<String,Object>();
-        PageRequest pageRequest = PageRequest.of(page-1,cnt, Sort.by("createdAt").descending());
+        PageRequest pageRequest = PageRequest.of(page-1,cnt, Sort.by("_id").descending());
         Page<Article> articles = articleRepository.findByBoardType(pageRequest, boardType);
         PageInfo pageInfo = new PageInfo();
         pageInfo.setCurPage(page);
@@ -65,7 +66,7 @@ public class MainBoardServiceImpl implements MainBoardService {
     @Override
     public Map<String,Object> getArticleListByTypeAndMajor(String boardType,String middleMajor, int page, int cnt) throws Exception {
         Map<String,Object> res = new HashMap<String,Object>();
-        PageRequest pageRequest = PageRequest.of(page-1,cnt, Sort.by("createdAt").descending());
+        PageRequest pageRequest = PageRequest.of(page-1,cnt, Sort.by("_id").descending());
         Page<Article> articles = articleRepository.findByBoardTypeAndMiddleMajor(pageRequest, boardType, middleMajor);
 
         PageInfo pageInfo = new PageInfo();
@@ -143,7 +144,55 @@ public class MainBoardServiceImpl implements MainBoardService {
         return articleRepository.save(article);
     }
 
+    @Override
+    public void removeArticle(String articleId) throws Exception {
+        String email = JwtUtil.getCurrentMemberEmail();
+        Article article = articleTemRepository.getArticleById(articleId);
+        if(article.getWriter().getEmail().equals(email)){
+            articleRepository.deleteById(articleId);
+        }else{
+            throw new Exception("삭제 권한이 없습니다!");
+        }
+    }
 
+    @Override
+    public Article removeComment(String articleId, int commentId) throws Exception {
+        String email = JwtUtil.getCurrentMemberEmail();
+        Article article = articleTemRepository.getArticleById(articleId);
+        List<CommentDto> comments = article.getComments();
+        for(CommentDto c : comments){
+            if(c.getId()==commentId ){
+                if(c.getFrom().getEmail().equals(email)){
+                    comments.remove(c);
+                    break;
+                }
+            }
+        }
+        article.setComments(comments);
+        return articleRepository.save(article);
+    }
 
-
+    @Override
+    public Article removeReply(String articleId, int commentId, int replyId) throws Exception {
+        String email = JwtUtil.getCurrentMemberEmail();
+        Article article = articleTemRepository.getArticleById(articleId);
+        List<CommentDto> comments = article.getComments();
+        outerLoop:
+        for(CommentDto c : comments){ //댓글찾기
+            if(c.getId()==commentId){
+                List<ReplyDto> replies = c.getReplies();
+                for(ReplyDto r: replies){ //답글찾기
+                    if(r.getId()==replyId){
+                        if(r.getFrom().getEmail().equals(email)){ //작성자찾기
+                            replies.remove(r);
+                            c.setReplies(replies);
+                            break outerLoop;
+                        }
+                    }
+                }
+            }
+        }
+        article.setComments(comments);
+        return articleRepository.save(article);
+    }
 }

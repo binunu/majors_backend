@@ -1,9 +1,12 @@
 package com.binunu.majors.membership.controller;
 
 import com.binunu.majors.membership.dto.Member;
+import com.binunu.majors.membership.dto.MemberInfoDto;
 import com.binunu.majors.membership.service.MemberService;
 import com.binunu.majors.security.JwtUtil;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,15 +17,12 @@ import java.util.Map;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("member")
 public class MemberController {
 
     private final MemberService memberService;
-
-    @Autowired
-    public MemberController(MemberService memberService) {
-        this.memberService = memberService;
-    }
+    private final ModelMapper modelMapper;
 
     @PostMapping("/email/exists") //이메일인증
     public ResponseEntity<Boolean> existsEmail(@RequestBody Map<String,String> body) {
@@ -93,13 +93,14 @@ public class MemberController {
             return new ResponseEntity<Member>(HttpStatus.BAD_REQUEST);
         }
     }
-    @GetMapping("/info/email")
-    public ResponseEntity<String> getMemberEmail(){
+    @GetMapping("/info/simple")
+    public ResponseEntity<MemberInfoDto> getMemberEmail(){
         try{
-            String email = JwtUtil.getCurrentMemberEmail();
-            return new ResponseEntity<String>(email, HttpStatus.OK);
+            Member member = memberService.getCurrentMember();
+            MemberInfoDto memberInfo = modelMapper.map(member,MemberInfoDto.class);
+            return new ResponseEntity<MemberInfoDto>(memberInfo, HttpStatus.OK);
         }catch (Exception e){
-            return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<MemberInfoDto>(HttpStatus.BAD_REQUEST);
         }
     }
 

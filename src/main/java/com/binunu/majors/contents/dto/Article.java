@@ -1,6 +1,6 @@
 package com.binunu.majors.contents.dto;
 
-import com.binunu.majors.membership.dto.MemberProfileDto;
+import com.binunu.majors.membership.dto.MemberInfoDto;
 import lombok.*;
 import org.springframework.data.annotation.*;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -19,7 +19,7 @@ public class Article {
     private String id;
     private String title;
     private String content;
-    private MemberProfileDto writer;
+    private MemberInfoDto writer;
     private String boardType;
     private String subject;
     private String middleMajor;

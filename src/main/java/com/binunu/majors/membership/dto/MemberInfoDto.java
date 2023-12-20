@@ -9,7 +9,7 @@ import lombok.ToString;
 @Getter
 @ToString
 @NoArgsConstructor
-public class MemberProfileDto {
+public class MemberInfoDto {
     private String email;
     private String nickname;
     private String major;
@@ -17,7 +17,7 @@ public class MemberProfileDto {
     private String graduate;
     private String profile;
 
-    public MemberProfileDto(Member member){
+    public MemberInfoDto(Member member){
         this.email=member.getEmail();
         this.nickname=member.getNickname();
         this.graduate=member.getGraduate();

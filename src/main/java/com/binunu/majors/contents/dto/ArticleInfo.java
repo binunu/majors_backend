@@ -14,5 +14,5 @@ public class ArticleInfo {
     private String boardType;
     private String subject;
     private int goods;
-    private int replyCnt;
+    private int commentCnt;
 }

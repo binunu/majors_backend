@@ -10,12 +10,11 @@ import java.util.Map;
 
 public interface MainBoardService {
     Article createArticle(Article article) throws Exception;
-//    Page<Article> getArticleList(int page, int cnt) throws Exception;
     Map<String,Object> getArticleListByType(String boardType, int page, int cnt) throws Exception;
     Map<String,Object> getArticleListByTypeAndMajor(String boardType, String middleMajor, int page, int cnt) throws Exception;
     Article getArticleDetail(String id) throws Exception;
-    Article createComment(CommentDto commentDto) throws Exception;
-    Article createReply(ReplyDto replyDto) throws Exception;
+    Map<String,Object> createComment(CommentDto commentDto) throws Exception;
+    Map<String,Object> createReply(ReplyDto replyDto) throws Exception;
     void removeArticle(String articleId) throws Exception;
     Article removeComment(String articleId, int commentId) throws Exception;
     Article removeReply(String articleId, int commentId, int replyId) throws Exception;

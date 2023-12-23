@@ -1,5 +1,6 @@
 package com.binunu.majors.membership.service;
 
+import com.binunu.majors.contents.dto.CommentInfo;
 import com.binunu.majors.membership.dto.Member;
 import com.binunu.majors.membership.repository.MemberRepository;
 import com.binunu.majors.security.JwtProvider;
@@ -44,7 +45,8 @@ public class MemberServiceImpl implements MemberService {
         member.setPassword(encodePassword);
 
         member.setArticles(new ArrayList<String>());
-        member.setComments(new ArrayList<String>());
+        member.setComments(new ArrayList<CommentInfo>());
+//        member.setReplys(new ArrayList<CommentInfo>());
         member.setScraps(new ArrayList<String>());
         member.setGoods(new ArrayList<String>());
         member.setBads(new ArrayList<String>());

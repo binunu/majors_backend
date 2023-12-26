@@ -12,13 +12,14 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.fasterxml.jackson.databind.type.LogicalType.Collection;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class MemberActionServiceImpl implements MemberActionService{
+public  class MemberActionServiceImpl implements MemberActionService{
     private final MemberService memberService;
     private final MemberRepository memberRepository;
     private final ArticleTemRepository articleTemRepository;
@@ -180,7 +181,11 @@ public class MemberActionServiceImpl implements MemberActionService{
     @Override
     public Map<String, Object> getLogComments(int page, int cnt) throws Exception {
         Map<String, Object> res = new HashMap<>();
-        List<CommentInfo> comments = memberService.getCurrentMember().getComments();
+        //삭제되지않은 댓글만 가져오기
+        List<CommentInfo> comments = memberService.getCurrentMember().getComments().stream()
+                .filter(comment -> !comment.isDeleted())
+                .collect(Collectors.toList());
+
         Collections.reverse(comments);
         int startIndex = (page-1)*cnt;
         int endIndex = Math.min(comments.size(),startIndex+cnt);
@@ -207,10 +212,37 @@ public class MemberActionServiceImpl implements MemberActionService{
             }
         }
         PageInfo pageInfo = pagination(page, cnt ,comments.size());
-        log.info(pageInfo.toString());
         res.put("list",subComments);
         res.put("pageInfo",pageInfo);
         return res;
+    }
+
+    @Override
+    public void removeArticle(String articleId) throws Exception {
+        Member member = memberService.getCurrentMember();
+        member.getArticles().remove(articleId);
+        memberRepository.save(member);
+    }
+
+    @Override
+    public void removeComment(String articleId, int commentId) throws Exception {
+        Member member = memberService.getCurrentMember();
+        for(CommentInfo c : member.getComments()){
+            if(c.getArticleId().equals(articleId) && c.getCommentId()==commentId ){
+                c.setDeleted(true);
+                break;
+            }
+        }
+        memberRepository.save(member);
+    }
+
+    @Override
+    public void removeReply(String articleId, int commentId, int replyId) throws Exception {
+        Member member = memberService.getCurrentMember();
+        log.info("리플삭제들어왔나?2");
+        member.getComments().removeIf(reply->
+                reply.getType().equals("reply") && reply.getArticleId().equals(articleId) && reply.getCommentId()==commentId && reply.getReplyId()==replyId);
+        memberRepository.save(member);
     }
 
     public PageInfo pagination(int curPage, int cnt, int size) throws Exception{

@@ -1,5 +1,7 @@
 package com.binunu.majors.membership.controller;
 
+import com.binunu.majors.contents.dto.CommentDto;
+import com.binunu.majors.contents.dto.CommentInfo;
 import com.binunu.majors.membership.dto.Member;
 import com.binunu.majors.membership.dto.MemberInfoDto;
 import com.binunu.majors.membership.service.MemberService;
@@ -13,7 +15,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -86,8 +91,12 @@ public class MemberController {
     @GetMapping("/info")
     public ResponseEntity<Member> getMemberInfo(){
         try{
-            String email = JwtUtil.getCurrentMemberEmail();
-            Member member = memberService.getMemberByEmail(email);
+            Member member = memberService.getCurrentMember();
+            List<CommentInfo> comments = member.getComments().stream()
+                    .filter(comment ->
+                            !comment.isDeleted())
+                    .toList();
+            member.setComments(comments);
             return new ResponseEntity<Member>(member, HttpStatus.OK);
         }catch (Exception e){
             return new ResponseEntity<Member>(HttpStatus.BAD_REQUEST);

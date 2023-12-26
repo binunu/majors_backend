@@ -21,6 +21,7 @@ public class CommentInfo {
     //type이 comment일때만
     private int replyId;
     private int replyCnt;
+    private boolean isDeleted;
 
     public CommentInfo(String articleId, int commentId){
         this.type="comment";

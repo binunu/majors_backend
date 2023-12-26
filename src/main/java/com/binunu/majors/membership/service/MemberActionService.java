@@ -13,10 +13,17 @@ public interface MemberActionService {
     void writeReply(String articleId,int commentId, int replyId) throws Exception;
     void reaction(String articleId,String state) throws Exception;
 
+    //가져오기
     Map<String,Object> getLogArticle(int page,int cnt)throws Exception;
     Map<String,Object> getLogScrap(int page,int cnt)throws Exception;
     Map<String,Object> getLogGoods(int page,int cnt)throws Exception;
     Map<String,Object> getLogBads(int page,int cnt)throws Exception;
     Map<String,Object> getLogComments(int page,int cnt)throws Exception;
-    //가져오기
+
+    //삭제하기
+    void removeArticle(String articleId)throws Exception;
+
+    void removeComment(String articleId, int commentId)throws Exception;
+    void removeReply(String articleId, int commentId, int replyId)throws Exception;
+
 }

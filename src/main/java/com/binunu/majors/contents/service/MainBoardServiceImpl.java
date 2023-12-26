@@ -170,16 +170,14 @@ public class MainBoardServiceImpl implements MainBoardService {
     public Article removeComment(String articleId, int commentId) throws Exception {
         String email = JwtUtil.getCurrentMemberEmail();
         Article article = articleTemRepository.getArticleById(articleId);
-        List<CommentDto> comments = article.getComments();
-        for(CommentDto c : comments){
+        for(CommentDto c : article.getComments()){
             if(c.getId()==commentId ){
                 if(c.getFrom().getEmail().equals(email)){
-                    comments.remove(c);
+                    c.setDeleted(true);
                     break;
                 }
             }
         }
-        article.setComments(comments);
         return articleRepository.save(article);
     }
 

@@ -20,6 +20,7 @@ public class CommentDto {
     private String createdAt;
     private List<ReplyDto> replies;
     private List<String> sympathy;
+    private boolean isDeleted;
 
     public static void numbering(){
         ++num;

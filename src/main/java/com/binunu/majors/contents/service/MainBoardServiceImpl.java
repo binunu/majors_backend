@@ -30,11 +30,12 @@ public class MainBoardServiceImpl implements MainBoardService {
     @Override
     public Article createArticle(Article article) throws Exception {
         Member mem = memberService.getCurrentMember();
-        MemberInfoDto memberProfileDto = new MemberInfoDto(mem);
+        MemberInfoDto memberProfileDto = modelMapper.map(mem, MemberInfoDto.class);
         article.setComments(new ArrayList<CommentDto>());
         article.setWriter(memberProfileDto);
         article.setGoods(0);
         article.setBads(0);
+        article.setDeleted(false);
         article.setReactions(new ArrayList<Reaction>());
         article.setScraps(new ArrayList<String>());
 
@@ -42,12 +43,12 @@ public class MainBoardServiceImpl implements MainBoardService {
     }
 
     @Override
-//    public List<Article> getArticleList() throws Exception {
     public Map<String,Object> getArticleListByType(String boardType, int page, int cnt) throws Exception {
-        Map<String,Object> res = new HashMap<String,Object>();
+        Map<String,Object> res = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page-1,cnt, Sort.by("_id").descending());
-        Page<Article> articles = articleRepository.findByBoardType(pageRequest, boardType);
+        Page<Article> articles = articleRepository.findByBoardTypeAndIsDeletedFalse(pageRequest, boardType);
         PageInfo pageInfo = new PageInfo();
+        pageInfo.setTotal(articles.getTotalElements());
         pageInfo.setCurPage(page);
         pageInfo.setAllPage(articles.getTotalPages());
         int start = ((page - 1) / 8) * 8 + 1;
@@ -67,9 +68,10 @@ public class MainBoardServiceImpl implements MainBoardService {
     public Map<String,Object> getArticleListByTypeAndMajor(String boardType,String middleMajor, int page, int cnt) throws Exception {
         Map<String,Object> res = new HashMap<String,Object>();
         PageRequest pageRequest = PageRequest.of(page-1,cnt, Sort.by("_id").descending());
-        Page<Article> articles = articleRepository.findByBoardTypeAndMiddleMajor(pageRequest, boardType, middleMajor);
+        Page<Article> articles = articleRepository.findByBoardTypeAndMiddleMajorAndIsDeletedFalse(pageRequest, boardType, middleMajor);
 
         PageInfo pageInfo = new PageInfo();
+        pageInfo.setTotal(articles.getTotalElements());
         pageInfo.setCurPage(page);
         pageInfo.setAllPage(articles.getTotalPages());
         int start = ((page - 1) / 8) * 8 + 1;
@@ -91,11 +93,12 @@ public class MainBoardServiceImpl implements MainBoardService {
     }
 
     @Override
-    public Article createComment(CommentDto commentDto) throws Exception {
+    public Map<String,Object> createComment(CommentDto commentDto) throws Exception {
+        Map<String,Object> map = new HashMap<>();
         commentDto.setReplies(new ArrayList<ReplyDto>()); //테스트필요
 
         Member member = memberService.getCurrentMember();
-        MemberInfoDto memberProfileDto = new MemberInfoDto(member);
+        MemberInfoDto memberProfileDto = modelMapper.map(member, MemberInfoDto.class);
         commentDto.setFrom(memberProfileDto); //작성자 기록
         //등록일 설정
         SimpleDateFormat format =  new SimpleDateFormat("yyyy-MM-dd HH:mm");
@@ -104,7 +107,8 @@ public class MainBoardServiceImpl implements MainBoardService {
         //공감
         commentDto.setSympathy(new ArrayList<String>());
         //id
-        commentDto.setId(CommentDto.getNum());
+        int commentId = CommentDto.getNum();
+        commentDto.setId(commentId);
         CommentDto.numbering();
 
         //article update
@@ -113,11 +117,15 @@ public class MainBoardServiceImpl implements MainBoardService {
         comment.add(commentDto);
         article.setComments(comment);
 
-        return articleRepository.save(article);
+        map.put("article",articleRepository.save(article));
+        map.put("commentId",commentId);
+
+        return map;
     }
 
     @Override
-    public Article createReply(ReplyDto replyDto) throws Exception {
+    public Map<String,Object> createReply(ReplyDto replyDto) throws Exception {
+        Map<String,Object> map = new HashMap<>();
         //등록일
         SimpleDateFormat format =  new SimpleDateFormat("yyyy-MM-dd HH:mm");
         String strDate = format.format(new Date());
@@ -126,10 +134,11 @@ public class MainBoardServiceImpl implements MainBoardService {
         replyDto.setSympathy(new ArrayList<String>());
         //답글작성자
         Member member = memberService.getCurrentMember();
-        MemberInfoDto memberProfileDto = new MemberInfoDto(member);
+        MemberInfoDto memberProfileDto = modelMapper.map(member, MemberInfoDto.class);
         replyDto.setFrom(memberProfileDto);
         //id넘버링
-        replyDto.setId(ReplyDto.getNum());
+        int replyId = ReplyDto.getNum();
+        replyDto.setId(replyId);
         ReplyDto.numbering();
         //article update
         Article article = getArticleDetail(replyDto.getArticleId());
@@ -141,7 +150,10 @@ public class MainBoardServiceImpl implements MainBoardService {
                 break;
             }
         }
-        return articleRepository.save(article);
+        map.put("article",articleRepository.save(article));
+        map.put("commentId",replyDto.getCommentId());
+        map.put("replyId",replyId);
+        return map;
     }
 
     @Override
@@ -149,7 +161,8 @@ public class MainBoardServiceImpl implements MainBoardService {
         String email = JwtUtil.getCurrentMemberEmail();
         Article article = articleTemRepository.getArticleById(articleId);
         if(article.getWriter().getEmail().equals(email)){
-            articleRepository.deleteById(articleId);
+            article.setDeleted(true);
+            articleRepository.save(article);
         }else{
             throw new Exception("삭제 권한이 없습니다!");
         }
@@ -159,16 +172,14 @@ public class MainBoardServiceImpl implements MainBoardService {
     public Article removeComment(String articleId, int commentId) throws Exception {
         String email = JwtUtil.getCurrentMemberEmail();
         Article article = articleTemRepository.getArticleById(articleId);
-        List<CommentDto> comments = article.getComments();
-        for(CommentDto c : comments){
+        for(CommentDto c : article.getComments()){
             if(c.getId()==commentId ){
                 if(c.getFrom().getEmail().equals(email)){
-                    comments.remove(c);
+                    c.setDeleted(true);
                     break;
                 }
             }
         }
-        article.setComments(comments);
         return articleRepository.save(article);
     }
 

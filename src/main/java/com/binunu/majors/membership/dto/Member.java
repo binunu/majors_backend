@@ -1,5 +1,6 @@
 package com.binunu.majors.membership.dto;
 
+import com.binunu.majors.contents.dto.CommentInfo;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,15 +30,18 @@ public class Member {
     private String nickname;
     private String major;
     private String middleMajor;
-    private String graduate;
+    private String largeMajor;
+    private String graduated;
     private String profile;
     private List<String> articles;
     private List<String> scraps;
     private List<String> goods;
     private List<String> bads;
-    private List<String> comments;
+    private List<CommentInfo> comments;
+//    private List<CommentInfo> replys;
     private String notifications;
     private List<String> roles;
+    private boolean isDeleted;
     @CreatedDate
     private Date joinedAt;
 

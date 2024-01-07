@@ -1,5 +1,7 @@
 package com.binunu.majors.membership.controller;
 
+import com.binunu.majors.contents.dto.CommentDto;
+import com.binunu.majors.contents.dto.CommentInfo;
 import com.binunu.majors.membership.dto.Member;
 import com.binunu.majors.membership.dto.MemberInfoDto;
 import com.binunu.majors.membership.service.MemberService;
@@ -13,7 +15,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -25,17 +30,21 @@ public class MemberController {
     private final ModelMapper modelMapper;
 
     @PostMapping("/email/exists") //이메일인증
-    public ResponseEntity<Boolean> existsEmail(@RequestBody Map<String,String> body) {
+    public ResponseEntity<String> existsEmail(@RequestBody Map<String,String> body) {
         try {
             String email = body.get("email");
             Member member = memberService.getMemberByEmail(email);
             if (member==null) { //중복확인 통과
-                return new ResponseEntity<Boolean>(true, HttpStatus.OK);
+                return new ResponseEntity<String>("true", HttpStatus.OK);
             } else {
-                return new ResponseEntity<Boolean>(false, HttpStatus.OK);
+                if(member.isDeleted()){
+//                    return new ResponseEntity<String>("가입할 수 없는 이메일입니다.",HttpStatus.OK);
+                    throw new Exception("가입할 수 없는 이메일입니다.");
+                }
+                throw new Exception("이미 존재하는 이메일입니다.");
             }
         } catch (Exception e) {
-            return new ResponseEntity<Boolean>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
     @GetMapping("/nickname/exist") //닉네임인증
@@ -45,6 +54,7 @@ public class MemberController {
             if (member==null) { //중복확인 통과
                 return new ResponseEntity<Boolean>(true, HttpStatus.OK);
             } else {
+                log.info(member.toString());
                 return new ResponseEntity<Boolean>(false, HttpStatus.OK);
             }
         } catch (Exception e) {
@@ -86,8 +96,12 @@ public class MemberController {
     @GetMapping("/info")
     public ResponseEntity<Member> getMemberInfo(){
         try{
-            String email = JwtUtil.getCurrentMemberEmail();
-            Member member = memberService.getMemberByEmail(email);
+            Member member = memberService.getCurrentMember();
+            List<CommentInfo> comments = member.getComments().stream()
+                    .filter(comment ->
+                            !comment.isDeleted())
+                    .toList();
+            member.setComments(comments);
             return new ResponseEntity<Member>(member, HttpStatus.OK);
         }catch (Exception e){
             return new ResponseEntity<Member>(HttpStatus.BAD_REQUEST);
@@ -101,6 +115,27 @@ public class MemberController {
             return new ResponseEntity<MemberInfoDto>(memberInfo, HttpStatus.OK);
         }catch (Exception e){
             return new ResponseEntity<MemberInfoDto>(HttpStatus.BAD_REQUEST);
+        }
+    }
+    @PostMapping("/update")
+    public ResponseEntity<MemberInfoDto> modifyMember(@RequestBody MemberInfoDto memberInfoDto){
+        try{
+            Member member = memberService.modifyMember(memberInfoDto);
+            MemberInfoDto memberInfo = modelMapper.map(member,MemberInfoDto.class);
+            return new ResponseEntity<MemberInfoDto>(memberInfo, HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<MemberInfoDto>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+
+    @DeleteMapping("/withdrawal")
+    public ResponseEntity<String> memberWithdrawal(){
+        try{
+            memberService.memberWithdrawal();
+            return new ResponseEntity<String>(HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
         }
     }
 

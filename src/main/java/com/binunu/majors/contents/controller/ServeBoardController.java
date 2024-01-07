@@ -4,6 +4,7 @@ import com.binunu.majors.contents.dto.Article;
 import com.binunu.majors.contents.dto.Major;
 import com.binunu.majors.contents.service.ServeBoardService;
 import com.binunu.majors.membership.service.MemberActionService;
+import com.binunu.majors.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +60,7 @@ public class ServeBoardController {
         }
     }
 
-    @GetMapping("/bookmark/{id}")
+    @PostMapping("/bookmark/{id}")
     public ResponseEntity<Article> bookmark(@PathVariable("id") String articleId) {
         try {
             //게시글 북마크리스트 갱신
@@ -78,7 +79,7 @@ public class ServeBoardController {
             //댓글 공감한 유저리스트 갱신
             Article article = serveBoardService.sympathy(articleId,commentId);
             //멤버 공감한 댓글
-            memberActionService.sympathy(articleId,commentId);
+//            memberActionService.sympathy(articleId,commentId);
             return new ResponseEntity<Article>(article, HttpStatus.OK);
         } catch (Exception e) {
             log.info(e.getMessage());
@@ -91,7 +92,7 @@ public class ServeBoardController {
             //댓글 공감한 유저리스트 갱신
             Article article = serveBoardService.sympathy(articleId,commentId,replyId);
             //멤버 공감한 댓글
-            memberActionService.sympathy(articleId,commentId,replyId);
+//            memberActionService.sympathy(articleId,commentId,replyId);
             return new ResponseEntity<Article>(article, HttpStatus.OK);
         } catch (Exception e) {
             log.info(e.getMessage());
@@ -105,7 +106,7 @@ public class ServeBoardController {
                 //내려보내줄거 ? article의 좋아요수, 싫어요수, 유저의 리액션 상태
                 Map<String, Object> res =serveBoardService.reaction(articleId,reactionType);
                 //유저의 리액션 list에 아티클 추가
-                //memberActionService.sympathy(articleId,commentId,replyId);
+                memberActionService.reaction(articleId,(String)res.get("state"));
                 return new ResponseEntity<Map<String, Object>>(res, HttpStatus.OK);
             } catch (Exception e) {
                 log.info(e.getMessage());

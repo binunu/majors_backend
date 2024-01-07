@@ -8,6 +8,6 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Reaction {
-    private String email;
+    private String email; //email
     private String state; //"T", "F", "N"
 }

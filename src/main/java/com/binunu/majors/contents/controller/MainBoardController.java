@@ -43,7 +43,6 @@ public class MainBoardController {
                                                          @PathVariable("category") String middleMajor,
                                                          @PathVariable("page") int page){
         Map<String,Object> res = null;
-        log.info(middleMajor);
         try{
             if(middleMajor.equals("entire")){
                 res = mainBoardService.getArticleListByType(boardType,page,10);
@@ -96,7 +95,10 @@ public class MainBoardController {
     @PostMapping("/write/comment")
     public ResponseEntity<Article> createComment(@RequestBody CommentDto commentDto){
         try{
-            Article article = mainBoardService.createComment(commentDto);
+            Map<String,Object> map = mainBoardService.createComment(commentDto);
+            Article article = (Article)map.get("article");
+            memberActionService.writeComment(article.getId(), (int)map.get("commentId"));
+
             return new ResponseEntity<Article>(article, HttpStatus.OK);
         }catch (Exception e){
             log.info(e.getMessage());
@@ -106,8 +108,13 @@ public class MainBoardController {
     @PostMapping("/write/reply")
     public ResponseEntity<Article> writeComment(@RequestBody ReplyDto replyDto){
         try{
-            Article article = mainBoardService.createReply(replyDto);
+            log.info(replyDto.toString());
+            Map<String,Object> map = mainBoardService.createReply(replyDto);
+            Article article = (Article)map.get("article");
+            memberActionService.writeReply(article.getId(), (int)map.get("commentId"),(int)map.get("replyId"));
+
             return new ResponseEntity<Article>(article, HttpStatus.OK);
+
         }catch (Exception e){
             log.info(e.getMessage());
             return new ResponseEntity<Article>(HttpStatus.BAD_REQUEST);
@@ -115,21 +122,22 @@ public class MainBoardController {
     }
 
     @DeleteMapping("/delete/article/{article-id}")
-    public ResponseEntity<String> removeArticleItem(@PathVariable("article-id") String articleId){
+    public ResponseEntity<Map<String,Object>> removeArticleItem(@PathVariable("article-id") String articleId){
         try{
-            log.info("articleId:"+articleId);
             mainBoardService.removeArticle(articleId);
-            return new ResponseEntity<String>("게시글이 삭제되었습니다!",HttpStatus.OK);
+            //멤버에서도삭제
+            memberActionService.removeArticle(articleId);
+            return new ResponseEntity<Map<String,Object>>(HttpStatus.OK);
         }catch (Exception e){
             log.info(e.getMessage());
-            return new ResponseEntity<String>(e.getMessage(),HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<Map<String,Object>>(HttpStatus.BAD_REQUEST);
         }
     }
     @DeleteMapping("/delete/comment/{article-id}/{comment-id}")
     public ResponseEntity<Article> removeArticleItem(@PathVariable("article-id") String articleId, @PathVariable("comment-id") int commentId){
         try{
-            log.info("댓글삭제id:"+commentId);
             Article article= mainBoardService.removeComment(articleId,commentId);
+            memberActionService.removeComment(articleId,commentId);
             return new ResponseEntity<Article>(article,HttpStatus.OK);
         }catch (Exception e){
             log.info(e.getMessage());
@@ -140,8 +148,9 @@ public class MainBoardController {
     @DeleteMapping("/delete/reply/{article-id}/{comment-id}/{reply-id}")
     public ResponseEntity<Article> removeArticleItem(@PathVariable("article-id") String articleId, @PathVariable("comment-id") int commentId,@PathVariable("reply-id") int replyId){
         try{
-            log.info("답글삭제id:"+replyId);
             Article article = mainBoardService.removeReply(articleId,commentId,replyId);
+            log.info("리플삭제들어왔나?1");
+            memberActionService.removeReply(articleId,commentId,replyId);
             return new ResponseEntity<Article>(article,HttpStatus.OK);
         }catch (Exception e){
             log.info(e.getMessage());

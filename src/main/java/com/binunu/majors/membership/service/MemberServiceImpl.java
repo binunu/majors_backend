@@ -1,6 +1,8 @@
 package com.binunu.majors.membership.service;
 
+import com.binunu.majors.contents.dto.CommentInfo;
 import com.binunu.majors.membership.dto.Member;
+import com.binunu.majors.membership.dto.MemberInfoDto;
 import com.binunu.majors.membership.repository.MemberRepository;
 import com.binunu.majors.security.JwtProvider;
 import com.binunu.majors.security.JwtUtil;
@@ -44,11 +46,13 @@ public class MemberServiceImpl implements MemberService {
         member.setPassword(encodePassword);
 
         member.setArticles(new ArrayList<String>());
-        member.setComments(new ArrayList<String>());
+        member.setComments(new ArrayList<CommentInfo>());
+//        member.setReplys(new ArrayList<CommentInfo>());
         member.setScraps(new ArrayList<String>());
         member.setGoods(new ArrayList<String>());
         member.setBads(new ArrayList<String>());
 //        member.setNotifications(0);
+        member.setDeleted(false);
 
         List<String> role = new ArrayList<String>();
         role.add("USER");
@@ -69,6 +73,25 @@ public class MemberServiceImpl implements MemberService {
     public Member getCurrentMember() throws Exception {
         String email = JwtUtil.getCurrentMemberEmail();
         return getMemberByEmail(email);
+    }
+
+    @Override
+    public Member modifyMember(MemberInfoDto memberInfoDto) throws Exception {
+        Member member = getCurrentMember();
+        member.setNickname(memberInfoDto.getNickname());
+        member.setLargeMajor(memberInfoDto.getLargeMajor());
+        member.setMiddleMajor(memberInfoDto.getMiddleMajor());
+        member.setMajor(memberInfoDto.getMajor());
+        member.setGraduated(memberInfoDto.getGraduated());
+
+        return memberRepository.save(member);
+    }
+
+    @Override
+    public void memberWithdrawal() throws Exception {
+        Member member = getCurrentMember();
+        member.setDeleted(true);
+        memberRepository.save(member);
     }
 
 

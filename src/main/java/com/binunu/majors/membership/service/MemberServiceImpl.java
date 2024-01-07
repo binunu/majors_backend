@@ -2,6 +2,7 @@ package com.binunu.majors.membership.service;
 
 import com.binunu.majors.contents.dto.CommentInfo;
 import com.binunu.majors.membership.dto.Member;
+import com.binunu.majors.membership.dto.MemberInfoDto;
 import com.binunu.majors.membership.repository.MemberRepository;
 import com.binunu.majors.security.JwtProvider;
 import com.binunu.majors.security.JwtUtil;
@@ -72,6 +73,18 @@ public class MemberServiceImpl implements MemberService {
     public Member getCurrentMember() throws Exception {
         String email = JwtUtil.getCurrentMemberEmail();
         return getMemberByEmail(email);
+    }
+
+    @Override
+    public Member modifyMember(MemberInfoDto memberInfoDto) throws Exception {
+        Member member = getCurrentMember();
+        member.setNickname(memberInfoDto.getNickname());
+        member.setLargeMajor(memberInfoDto.getLargeMajor());
+        member.setMiddleMajor(memberInfoDto.getMiddleMajor());
+        member.setMajor(memberInfoDto.getMajor());
+        member.setGraduated(memberInfoDto.getGraduated());
+
+        return memberRepository.save(member);
     }
 
     @Override

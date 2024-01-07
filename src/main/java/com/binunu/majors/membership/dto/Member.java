@@ -30,7 +30,8 @@ public class Member {
     private String nickname;
     private String major;
     private String middleMajor;
-    private String graduate;
+    private String largeMajor;
+    private String graduated;
     private String profile;
     private List<String> articles;
     private List<String> scraps;

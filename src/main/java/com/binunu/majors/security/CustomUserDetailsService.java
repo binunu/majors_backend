@@ -19,7 +19,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<Member> oMember = memberRepository.findByEmail(username);
-        if(oMember.isPresent()){
+        if(oMember.isPresent() && !oMember.get().isDeleted()){
             return createUserDetails(oMember.get());
         }else{
             throw new UsernameNotFoundException("회원정보가 일치하지 않습니다.");

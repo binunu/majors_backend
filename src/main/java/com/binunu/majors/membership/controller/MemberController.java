@@ -54,6 +54,7 @@ public class MemberController {
             if (member==null) { //중복확인 통과
                 return new ResponseEntity<Boolean>(true, HttpStatus.OK);
             } else {
+                log.info(member.toString());
                 return new ResponseEntity<Boolean>(false, HttpStatus.OK);
             }
         } catch (Exception e) {
@@ -116,6 +117,17 @@ public class MemberController {
             return new ResponseEntity<MemberInfoDto>(HttpStatus.BAD_REQUEST);
         }
     }
+    @PostMapping("/update")
+    public ResponseEntity<MemberInfoDto> modifyMember(@RequestBody MemberInfoDto memberInfoDto){
+        try{
+            Member member = memberService.modifyMember(memberInfoDto);
+            MemberInfoDto memberInfo = modelMapper.map(member,MemberInfoDto.class);
+            return new ResponseEntity<MemberInfoDto>(memberInfo, HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<MemberInfoDto>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
 
     @DeleteMapping("/withdrawal")
     public ResponseEntity<String> memberWithdrawal(){

@@ -8,5 +8,6 @@ public interface MemberService {
     public void join(Member member) throws Exception;
     public String login(String email, String password) throws Exception;
     Member getCurrentMember() throws Exception;
+    void memberWithdrawal() throws Exception;
 
 }

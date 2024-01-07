@@ -35,6 +35,7 @@ public class MainBoardServiceImpl implements MainBoardService {
         article.setWriter(memberProfileDto);
         article.setGoods(0);
         article.setBads(0);
+        article.setDeleted(false);
         article.setReactions(new ArrayList<Reaction>());
         article.setScraps(new ArrayList<String>());
 
@@ -45,7 +46,7 @@ public class MainBoardServiceImpl implements MainBoardService {
     public Map<String,Object> getArticleListByType(String boardType, int page, int cnt) throws Exception {
         Map<String,Object> res = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page-1,cnt, Sort.by("_id").descending());
-        Page<Article> articles = articleRepository.findByBoardType(pageRequest, boardType);
+        Page<Article> articles = articleRepository.findByBoardTypeAndIsDeletedFalse(pageRequest, boardType);
         PageInfo pageInfo = new PageInfo();
         pageInfo.setTotal(articles.getTotalElements());
         pageInfo.setCurPage(page);
@@ -67,7 +68,7 @@ public class MainBoardServiceImpl implements MainBoardService {
     public Map<String,Object> getArticleListByTypeAndMajor(String boardType,String middleMajor, int page, int cnt) throws Exception {
         Map<String,Object> res = new HashMap<String,Object>();
         PageRequest pageRequest = PageRequest.of(page-1,cnt, Sort.by("_id").descending());
-        Page<Article> articles = articleRepository.findByBoardTypeAndMiddleMajor(pageRequest, boardType, middleMajor);
+        Page<Article> articles = articleRepository.findByBoardTypeAndMiddleMajorAndIsDeletedFalse(pageRequest, boardType, middleMajor);
 
         PageInfo pageInfo = new PageInfo();
         pageInfo.setTotal(articles.getTotalElements());
@@ -160,7 +161,8 @@ public class MainBoardServiceImpl implements MainBoardService {
         String email = JwtUtil.getCurrentMemberEmail();
         Article article = articleTemRepository.getArticleById(articleId);
         if(article.getWriter().getEmail().equals(email)){
-            articleRepository.deleteById(articleId);
+            article.setDeleted(true);
+            articleRepository.save(article);
         }else{
             throw new Exception("삭제 권한이 없습니다!");
         }

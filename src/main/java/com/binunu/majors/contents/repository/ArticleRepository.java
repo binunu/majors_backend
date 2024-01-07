@@ -9,6 +9,6 @@ import java.awt.print.Pageable;
 import java.util.List;
 
 public interface ArticleRepository extends MongoRepository<Article,String> {
-    Page<Article> findByBoardType(PageRequest pageRequest,String boardType)throws Exception;
-    Page<Article> findByBoardTypeAndMiddleMajor(PageRequest pageRequest, String boardType, String middleMajor)throws Exception;
+    Page<Article> findByBoardTypeAndIsDeletedFalse(PageRequest pageRequest,String boardType)throws Exception;
+    Page<Article> findByBoardTypeAndMiddleMajorAndIsDeletedFalse(PageRequest pageRequest, String boardType, String middleMajor)throws Exception;
 }

@@ -51,6 +51,7 @@ public class MemberServiceImpl implements MemberService {
         member.setGoods(new ArrayList<String>());
         member.setBads(new ArrayList<String>());
 //        member.setNotifications(0);
+        member.setDeleted(false);
 
         List<String> role = new ArrayList<String>();
         role.add("USER");
@@ -71,6 +72,13 @@ public class MemberServiceImpl implements MemberService {
     public Member getCurrentMember() throws Exception {
         String email = JwtUtil.getCurrentMemberEmail();
         return getMemberByEmail(email);
+    }
+
+    @Override
+    public void memberWithdrawal() throws Exception {
+        Member member = getCurrentMember();
+        member.setDeleted(true);
+        memberRepository.save(member);
     }
 
 

@@ -28,6 +28,7 @@ public class Article {
     private List<Reaction> reactions;
     private List<String> scraps;
     private List<CommentDto> comments;
+    private boolean isDeleted;
     @CreatedDate
     private Date createdAt;
     @LastModifiedDate

@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collections;
 import java.util.List;
@@ -118,9 +119,9 @@ public class MemberController {
         }
     }
     @PostMapping("/update")
-    public ResponseEntity<MemberInfoDto> modifyMember(@RequestBody MemberInfoDto memberInfoDto){
+    public ResponseEntity<MemberInfoDto> modifyMember(@ModelAttribute MemberInfoDto memberInfoDto, @RequestParam(value = "file", required=false) MultipartFile file){
         try{
-            Member member = memberService.modifyMember(memberInfoDto);
+            Member member = memberService.modifyMember(memberInfoDto,file);
             MemberInfoDto memberInfo = modelMapper.map(member,MemberInfoDto.class);
             return new ResponseEntity<MemberInfoDto>(memberInfo, HttpStatus.OK);
         }catch (Exception e){

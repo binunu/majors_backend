@@ -37,6 +37,17 @@ public class MainBoardController {
             return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
         }
     }
+    @PostMapping("/modify/article")
+    public ResponseEntity<String> modifyArticle(@RequestBody Article articleDto){
+        try{
+            Article article = mainBoardService.modifyArticle(articleDto);
+            return new ResponseEntity<String>(article.getId(), HttpStatus.OK);
+
+        }catch (Exception e){
+            log.info(e.getMessage());
+            return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+        }
+    }
     //리스트형 게시글 목록
     @GetMapping("/article/list/{type}/{category}/{page}") //type:study, job, community
     public ResponseEntity<Map<String,Object>> getArticleList(@PathVariable("type") String boardType,

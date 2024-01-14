@@ -10,6 +10,7 @@ import java.util.Map;
 
 public interface MainBoardService {
     Article createArticle(Article article) throws Exception;
+    Article modifyArticle(Article article) throws Exception;
     Map<String,Object> getArticleListByType(String boardType, int page, int cnt) throws Exception;
     Map<String,Object> getArticleListByTypeAndMajor(String boardType, String middleMajor, int page, int cnt) throws Exception;
     Article getArticleDetail(String id) throws Exception;

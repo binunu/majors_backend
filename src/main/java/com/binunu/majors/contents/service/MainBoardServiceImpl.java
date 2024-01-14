@@ -43,6 +43,25 @@ public class MainBoardServiceImpl implements MainBoardService {
     }
 
     @Override
+    public Article modifyArticle(Article newArticle) throws Exception {
+        Member mem = memberService.getCurrentMember();
+        Article oldArticle = articleRepository.findById(newArticle.getId()).orElse(null);
+        if(!oldArticle.getWriter().getEmail().equals(mem.getEmail())){
+            new Exception("수정 권한이 없습니다.");
+        }
+        MemberInfoDto memberProfileDto = modelMapper.map(mem, MemberInfoDto.class);
+
+        oldArticle.setWriter(memberProfileDto);
+        oldArticle.setTitle(newArticle.getTitle());
+        oldArticle.setBoardType(newArticle.getBoardType());
+        oldArticle.setContent(newArticle.getContent());
+        oldArticle.setMiddleMajor(newArticle.getMiddleMajor());
+        oldArticle.setSubject(newArticle.getSubject());
+
+        return articleRepository.save(oldArticle);
+    }
+
+    @Override
     public Map<String,Object> getArticleListByType(String boardType, int page, int cnt) throws Exception {
         Map<String,Object> res = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(page-1,cnt, Sort.by("_id").descending());

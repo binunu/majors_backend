@@ -1,6 +1,7 @@
 package com.binunu.majors.membership.service;
 
 import com.binunu.majors.contents.dto.CommentInfo;
+import com.binunu.majors.contents.service.FileService;
 import com.binunu.majors.membership.dto.Member;
 import com.binunu.majors.membership.dto.MemberInfoDto;
 import com.binunu.majors.membership.repository.MemberRepository;
@@ -13,6 +14,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +28,7 @@ public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtProvider jwtProvider;
+    private final FileService fileService;
 
 
     @Override
@@ -44,7 +47,7 @@ public class MemberServiceImpl implements MemberService {
     public void join(Member member) throws Exception {
         String encodePassword = passwordEncoder.encode(member.getPassword());
         member.setPassword(encodePassword);
-
+        member.setProfile("basic_profile.png");
         member.setArticles(new ArrayList<String>());
         member.setComments(new ArrayList<CommentInfo>());
 //        member.setReplys(new ArrayList<CommentInfo>());
@@ -76,13 +79,18 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public Member modifyMember(MemberInfoDto memberInfoDto) throws Exception {
+    public Member modifyMember(MemberInfoDto memberInfoDto, MultipartFile file) throws Exception {
         Member member = getCurrentMember();
         member.setNickname(memberInfoDto.getNickname());
         member.setLargeMajor(memberInfoDto.getLargeMajor());
         member.setMiddleMajor(memberInfoDto.getMiddleMajor());
         member.setMajor(memberInfoDto.getMajor());
         member.setGraduated(memberInfoDto.getGraduated());
+
+        if(file!=null&&!file.isEmpty()){
+            String fileName = fileService.fileUpload(file);
+            member.setProfile(fileName);
+        }
 
         return memberRepository.save(member);
     }

@@ -5,6 +5,7 @@ import com.binunu.majors.contents.repository.ArticleRepository;
 import com.binunu.majors.contents.repository.ArticleTemRepository;
 import com.binunu.majors.membership.dto.Member;
 import com.binunu.majors.membership.dto.MemberInfoDto;
+import com.binunu.majors.membership.repository.MemberRepository;
 import com.binunu.majors.membership.service.MemberService;
 import com.binunu.majors.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
@@ -26,6 +28,7 @@ public class MainBoardServiceImpl implements MainBoardService {
     private final MemberService memberService;
     private final ArticleTemRepository articleTemRepository;
     private final ModelMapper modelMapper;
+    private final MemberRepository memberRepository;
 
     @Override
     public Article createArticle(Article article) throws Exception {
@@ -40,6 +43,25 @@ public class MainBoardServiceImpl implements MainBoardService {
         article.setScraps(new ArrayList<String>());
 
         return articleRepository.save(article);
+    }
+
+    @Override
+    public Article modifyArticle(Article newArticle) throws Exception {
+        Member mem = memberService.getCurrentMember();
+        Article oldArticle = articleRepository.findById(newArticle.getId()).orElse(null);
+        if(!oldArticle.getWriter().getEmail().equals(mem.getEmail())){
+            new Exception("수정 권한이 없습니다.");
+        }
+        MemberInfoDto memberProfileDto = modelMapper.map(mem, MemberInfoDto.class);
+
+        oldArticle.setWriter(memberProfileDto);
+        oldArticle.setTitle(newArticle.getTitle());
+        oldArticle.setBoardType(newArticle.getBoardType());
+        oldArticle.setContent(newArticle.getContent());
+        oldArticle.setMiddleMajor(newArticle.getMiddleMajor());
+        oldArticle.setSubject(newArticle.getSubject());
+
+        return articleRepository.save(oldArticle);
     }
 
     @Override
@@ -87,6 +109,39 @@ public class MainBoardServiceImpl implements MainBoardService {
 
         return res;
     }
+
+    @Override
+    public List<Article> getArticleListOnGoods() throws Exception {
+        PageRequest pageRequest = PageRequest.of(0,5,Sort.by("goods").descending());
+        return articleRepository.findAll(pageRequest).getContent();
+    }
+
+    @Override
+    public List<Article> getArticleListOnComments() throws Exception {
+        return articleRepository.findTop5ByOrderByCommentCountDesc();
+    }
+
+    @Override
+    public List<Article> getArticleListOnRecency() throws Exception {
+        PageRequest pageRequest = PageRequest.of(0,5,Sort.by("createdAt").descending());
+        return articleRepository.findAll(pageRequest).getContent();
+    }
+
+    @Override
+    public List<Article> getArticleListOnMajor() throws Exception {
+        PageRequest pageRequest = PageRequest.of(0,5,Sort.by("goods").descending());
+        Member member = memberService.getCurrentMember();
+        String major = member.getMiddleMajor();
+        return articleRepository.findAllByMiddleMajor(pageRequest,major);
+    }
+
+    @Override
+    public List<Member> getArticleListOnRank() throws Exception {
+        Member member = memberService.getCurrentMember();
+        String major = member.getMiddleMajor();
+        return memberRepository.findTop5ByOrderByActionDesc(major);
+    }
+
     @Override
     public Article getArticleDetail(String id) throws Exception {
         return articleTemRepository.getArticleById(id);

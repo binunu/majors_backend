@@ -84,4 +84,5 @@ public class ArticleTemRepository {
     public Article getArticleById(String articleId){
         return mongoTemplate.findById(articleId,Article.class);
     }
+
 }

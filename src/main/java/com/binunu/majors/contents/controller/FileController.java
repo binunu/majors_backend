@@ -18,6 +18,7 @@ public class FileController {
     @GetMapping("/image/view/{filename}")
     @ResponseBody
     public byte[] fileView(@PathVariable("filename") String fileName){
+        log.info(fileName);
         return fileService.fileView(fileName);
     }
 }

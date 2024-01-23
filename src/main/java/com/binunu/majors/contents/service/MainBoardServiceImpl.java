@@ -142,6 +142,50 @@ public class MainBoardServiceImpl implements MainBoardService {
         return memberRepository.findTop5ByOrderByActionDesc(major);
     }
 
+
+    @Override
+    public Map<String,Object> getSearchedArticles(String type, String word) throws Exception {
+        Map<String, Object> res = new HashMap<>();
+        List<ArticleInfo> newList = new ArrayList<>();
+
+        PageRequest pageRequest = PageRequest.of(0,7, Sort.by("_id").descending());
+        Page<Article> articles = articleRepository.findAllByBoardTypeAndContent(type, word, pageRequest);
+
+        for(Article a : articles.getContent()){
+            ArticleInfo aInfo = modelMapper.map(a,ArticleInfo.class);
+            aInfo.setCommentCnt(a.getComments().size());
+            newList.add(aInfo);
+        }
+
+        res.put("list", newList);
+        res.put("totalCnt", articles.getTotalElements());
+        return res;
+    }
+
+    @Override
+    public Map<String,Object> getSearchedArticlesByPage(String type, String word, int page) throws Exception {
+        Map<String,Object> res = new HashMap<>();
+        PageRequest pageRequest = PageRequest.of(page-1,10, Sort.by("_id").descending());
+        Page<Article> articles = articleRepository.findAllByBoardTypeAndContent(type, word, pageRequest);
+
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setTotal(articles.getTotalElements());
+        pageInfo.setCurPage(page);
+        pageInfo.setAllPage(articles.getTotalPages());
+        int start = ((page - 1) / 8) * 8 + 1;
+        int end = start+8-1;
+        if(end>pageInfo.getAllPage()) {
+            end = pageInfo.getAllPage();
+        }
+        pageInfo.setStartPage(start);
+        pageInfo.setEndPage(end);
+
+        res.put("pageInfo",pageInfo);
+        res.put("list",articles.getContent());
+
+        return res;
+    }
+
     @Override
     public Article getArticleDetail(String id) throws Exception {
         return articleTemRepository.getArticleById(id);

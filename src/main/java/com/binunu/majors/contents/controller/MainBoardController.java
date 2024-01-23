@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -163,6 +164,36 @@ public class MainBoardController {
             return new ResponseEntity<List<MemberInfoDto>>(HttpStatus.BAD_REQUEST);
         }
     }
+
+    @GetMapping("/article/list/search/{type}/{word}")
+    public ResponseEntity<Map<String,Object>> getSearchedArticles(@PathVariable("type") String type, @PathVariable("word") String word){
+        try{
+            Map<String,Object> res = mainBoardService.getSearchedArticles(type, word);
+            return new ResponseEntity<Map<String,Object>>(res,HttpStatus.OK);
+        }catch(Exception e){
+            log.info(e.getMessage());
+            return new ResponseEntity<Map<String,Object>>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/article/list/search/{type}/{word}/{page}")
+    public ResponseEntity<Map<String,Object>> getSearchedArticlesByPage(@PathVariable("type") String type, @PathVariable("word") String word,  @PathVariable("page") int page){
+        try{
+            List<ArticleInfo> newList = new ArrayList<>();
+            Map<String,Object> res = mainBoardService.getSearchedArticlesByPage(type, word, page);
+            for(Article a : (List<Article>)res.get("list")){
+                ArticleInfo aInfo = modelMapper.map(a,ArticleInfo.class);
+                aInfo.setCommentCnt(a.getComments().size());
+                newList.add(aInfo);
+            }
+            res.put("list", newList);
+            return new ResponseEntity<Map<String,Object>>(res,HttpStatus.OK);
+        }catch(Exception e){
+            log.info(e.getMessage());
+            return new ResponseEntity<Map<String,Object>>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
 
     @GetMapping("/article/peed/{type}/{category}/{page}") //type:study, job, community
     public ResponseEntity<Map<String,Object>> getArticleListForPeed(@PathVariable("type") String boardType,

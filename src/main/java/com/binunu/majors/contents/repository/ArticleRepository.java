@@ -1,6 +1,7 @@
 package com.binunu.majors.contents.repository;
 
 import com.binunu.majors.contents.dto.Article;
+import jdk.jshell.spi.ExecutionControlProvider;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.repository.Aggregation;
@@ -22,5 +23,9 @@ public interface ArticleRepository extends MongoRepository<Article,String> {
     List<Article> findTop5ByOrderByCommentCountDesc() throws Exception;
 
     List<Article> findAllByMiddleMajor(PageRequest pageRequest,String major)throws Exception;
+
+    @Query("{'boardType': ?0, '$or': [{'content': {$regex : ?1, $options: 'i'}}, {'title': {$regex : ?1, $options: 'i'}}]}")
+    Page<Article> findAllByBoardTypeAndContent(String type, String word,PageRequest pageRequest)throws Exception;
+
 
 }

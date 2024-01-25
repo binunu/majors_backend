@@ -20,7 +20,8 @@ public interface MainBoardService {
     List<Article> getArticleListOnRecency() throws Exception;
     List<Article> getArticleListOnMajor() throws Exception;
     List<Member> getArticleListOnRank() throws Exception;
-
+    Map<String,Object> getSearchedArticles(String type, String word) throws Exception;
+    Map<String,Object> getSearchedArticlesByPage(String type, String word, int page) throws Exception;
     Article getArticleDetail(String id) throws Exception;
     Map<String,Object> createComment(CommentDto commentDto) throws Exception;
     Map<String,Object> createReply(ReplyDto replyDto) throws Exception;

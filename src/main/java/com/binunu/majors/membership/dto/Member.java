@@ -42,7 +42,6 @@ public class Member {
     private String notifications;
     private List<String> roles;
     private boolean isDeleted;
-    @CreatedDate
-    private Date joinedAt;
+    private String joinedAt;
 
 }

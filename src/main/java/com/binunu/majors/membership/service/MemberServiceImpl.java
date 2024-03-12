@@ -1,6 +1,7 @@
 package com.binunu.majors.membership.service;
 
 import com.binunu.majors.contents.dto.CommentInfo;
+import com.binunu.majors.contents.service.CustomUtilService;
 import com.binunu.majors.contents.service.FileService;
 import com.binunu.majors.membership.dto.Member;
 import com.binunu.majors.membership.dto.MemberInfoDto;
@@ -56,6 +57,7 @@ public class MemberServiceImpl implements MemberService {
         member.setBads(new ArrayList<String>());
 //        member.setNotifications(0);
         member.setDeleted(false);
+        member.setJoinedAt(CustomUtilService.changeDateToString());
 
         List<String> role = new ArrayList<String>();
         role.add("USER");

@@ -18,6 +18,9 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Slf4j
@@ -41,7 +44,8 @@ public class MainBoardServiceImpl implements MainBoardService {
         article.setDeleted(false);
         article.setReactions(new ArrayList<Reaction>());
         article.setScraps(new ArrayList<String>());
-
+        article.setCreatedAt(CustomUtilService.changeDateAndTimeToString());
+        article.setModifiedAt(CustomUtilService.changeDateAndTimeToString());
         return articleRepository.save(article);
     }
 
@@ -60,7 +64,7 @@ public class MainBoardServiceImpl implements MainBoardService {
         oldArticle.setContent(newArticle.getContent());
         oldArticle.setMiddleMajor(newArticle.getMiddleMajor());
         oldArticle.setSubject(newArticle.getSubject());
-
+        oldArticle.setModifiedAt(CustomUtilService.changeDateAndTimeToString());
         return articleRepository.save(oldArticle);
     }
 
@@ -200,9 +204,8 @@ public class MainBoardServiceImpl implements MainBoardService {
         MemberInfoDto memberProfileDto = modelMapper.map(member, MemberInfoDto.class);
         commentDto.setFrom(memberProfileDto); //작성자 기록
         //등록일 설정
-        SimpleDateFormat format =  new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        String strDate = format.format(new Date());
-        commentDto.setCreatedAt(strDate);
+        commentDto.setCreatedAt(CustomUtilService.changeDateAndTimeToString());
+
         //공감
         commentDto.setSympathy(new ArrayList<String>());
         //id
@@ -226,9 +229,7 @@ public class MainBoardServiceImpl implements MainBoardService {
     public Map<String,Object> createReply(ReplyDto replyDto) throws Exception {
         Map<String,Object> map = new HashMap<>();
         //등록일
-        SimpleDateFormat format =  new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        String strDate = format.format(new Date());
-        replyDto.setCreatedAt(strDate);
+        replyDto.setCreatedAt(CustomUtilService.changeDateAndTimeToString());
         //공감수초기화
         replyDto.setSympathy(new ArrayList<String>());
         //답글작성자

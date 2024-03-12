@@ -18,5 +18,5 @@ public class MemberInfoDto {
     private String largeMajor;
     private String graduated;
     private String profile;
-    private Date joinedAt;
+    private String joinedAt;
 }

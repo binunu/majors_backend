@@ -29,9 +29,9 @@ public class Article {
     private List<String> scraps;
     private List<CommentDto> comments;
     private boolean isDeleted;
-    @CreatedDate
-    private Date createdAt;
-    @LastModifiedDate
-    private Date modifiedAt;
+//    @CreatedDate
+    private String createdAt;
+//    @LastModifiedDate
+    private String modifiedAt;
 
 }

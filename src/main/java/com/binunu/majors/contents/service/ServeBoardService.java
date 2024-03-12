@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface ServeBoardService {
+
     List<Major> getDistinctLargeMajor() throws Exception;
     List<Major> getDistinctMiddleMajor(String large) throws Exception;
     List<Major> getDistinctMiddleMajor() throws Exception;

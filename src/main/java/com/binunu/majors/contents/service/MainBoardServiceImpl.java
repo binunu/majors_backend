@@ -117,7 +117,7 @@ public class MainBoardServiceImpl implements MainBoardService {
     @Override
     public List<Article> getArticleListOnGoods() throws Exception {
         PageRequest pageRequest = PageRequest.of(0,5,Sort.by("goods").descending());
-        return articleRepository.findAll(pageRequest).getContent();
+        return articleRepository.findAllByIsDeletedFalse(pageRequest).getContent();
     }
 
     @Override
@@ -128,7 +128,7 @@ public class MainBoardServiceImpl implements MainBoardService {
     @Override
     public List<Article> getArticleListOnRecency() throws Exception {
         PageRequest pageRequest = PageRequest.of(0,5,Sort.by("createdAt").descending());
-        return articleRepository.findAll(pageRequest).getContent();
+        return articleRepository.findAllByIsDeletedFalse(pageRequest).getContent();
     }
 
     @Override
@@ -136,7 +136,7 @@ public class MainBoardServiceImpl implements MainBoardService {
         PageRequest pageRequest = PageRequest.of(0,5,Sort.by("goods").descending());
         Member member = memberService.getCurrentMember();
         String major = member.getMiddleMajor();
-        return articleRepository.findAllByMiddleMajor(pageRequest,major);
+        return articleRepository.findAllByMiddleMajorAndIsDeletedFalse(pageRequest,major);
     }
 
     @Override
